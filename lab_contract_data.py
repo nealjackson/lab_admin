@@ -7,7 +7,7 @@ def lab_contract_data():
     contract['S1PC1THU'] =  ['0555550000000000000000000']
     contract['S1PC2THU'] =  ['0555550000000000000000000']
     contract['S1PC3THU'] =  ['0555550000000000000000000']
-    contract['S1Y1MON'] =   ['500000055555500000000000']  # 1st year general lab
+    contract['S1Y1MON'] =   ['5000000555555000000000000']  # 1st year general lab
     contract['S1Y1MONXE'] = ['5000000555555000000000000']  # 1st year general lab (electronics demonstrators)
     contract['S1Y1THU'] =   ['5000000555555000000000000']
     contract['S1Y1THUXE'] = ['5009990555555000000000000']

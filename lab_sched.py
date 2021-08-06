@@ -9,9 +9,10 @@ def consolidate (infile, outfile):
     while True:
         i = f.readline()
         if i:
-            name = i.split('[')[0].strip()
+            name = ' '.join(i.split()[:len(i.split())-2]).strip()
+#            name = i.split('[')[0].strip()
             this_class = i.split()[-1]
-            fields = i.split('\'')[-2]
+            fields = i.split()[-2]
         else:
             name = 'ZZZZZZZ'
         if name != oldname:
@@ -99,10 +100,21 @@ contract = lab_contract_data.lab_contract_data()
 
 f = open('lab_people')
 fo = open('lab_contracts.temp1','w')
-for i in f:
+for i in f:  # find names of GTAs for contract generation
+    isdoingweeks = [True]*25
+    # process only names without dots; exclude section headings or comments
     if not len(i.strip()) or '.' in i or '\\bf' in i or "{" in i or i[0]=='#':
         continue
-    if i[0]=='%':
+    print ('Processing name:',i)
+    if '(w' in i:    # take things like (w1-5) out of names and adjust contract hours
+        weeks = np.asarray(i.split('(w')[1].split(')')[0].split('-'),dtype='int')
+        print (weeks,weeks[0],weeks[1])
+        i = i[:i.index('(')].rstrip()
+        # only works for S1 here!! and requires exact formatting Joe Bloggs (w7-12)
+        for j in range(25):
+            if j<weeks[0] or j>weeks[1]:
+                isdoingweeks[j] = False
+    if i[0]=='%':   # start of a different lab
         if i[1:6]=='MATHS':
             break
         this_class = i[1:]
@@ -113,16 +125,20 @@ for i in f:
         except:
             pass
         continue
-    print ('Processing name:',i)
+    ctemp = contract[current]+'XE' if 'XE' in i else contract[current]
+    ctemp = list(ctemp[0])
+    cwrite=''
+    print (ctemp,isdoingweeks)
+    for j in range(25):
+        cwrite += (ctemp[j] if isdoingweeks[j] else '0')
     if 'XE' in i:
-        fo.write('%s %s %s'%(i.strip().strip('(XE)'), contract[current+'XE'],\
-                      this_class))
+        fo.write('%s %s %s'%(i.strip().strip('(XE)'), cwrite,this_class))
     else:
-        fo.write('%s %s %s'%(i.strip(), contract[current],this_class))
+        fo.write('%s %s %s'%(i.strip(), cwrite,this_class))
 
 fo.close()
 f.close()
 os.system ('sort lab_contracts.temp1 >lab_contracts.temp2')
 os.system ('uniq lab_contracts.temp2 >lab_contracts.temp3')
 consolidate ('lab_contracts.temp3','lab_contracts.csv')
-#os.system ('rm lab_contracts.temp1; rm lab_contracts.temp2')
+os.system ('rm lab_contracts.temp1; rm lab_contracts.temp2;rm lab_contracts.temp3')
