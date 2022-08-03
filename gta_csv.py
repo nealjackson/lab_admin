@@ -9,7 +9,12 @@ import csv
 GTAPREFS = 'gta-prefs.csv'
 GTASKILLS = 'gta-skills.csv'
 ID,NAME1,NAME2,DEPT,GROUP = 2,3,4,5,6   # column numbers in the csv files
-NUMPG = 28          # Number of entries per page of output PDF
+NUMPG = 30          # Number of entries per page of output PDF
+EXCLUDE_MATHS = True    # to remove anyone who's said they want maths tutorials
+try:
+    gta_maths = np.loadtxt('gta_maths',delimiter=';',dtype='str')
+except:
+    gta_maths = []
 
 def isgta (a,gta_id):
     for igta,gta in enumerate(a):
@@ -30,6 +35,8 @@ with open(GTAPREFS,mode='r') as csv_file:
         if isgta(a,row[ID])!=-1:   # present already
             pass
         else:
+            if row[NAME1]+' '+row[NAME2] in gta_maths and EXCLUDE_MATHS:
+                continue
             a.append(dict(gta_id=row[ID]))
             a[len(a)-1]['name']=row[NAME1]+' '+row[NAME2]
             a[len(a)-1]['dept']=row[DEPT][:4]
@@ -47,6 +54,8 @@ with open(GTASKILLS,mode='r') as csv_file:
         if isgta(a,row[ID])!=-1:   # present already
             pass
         else:
+            if row[NAME1]+' '+row[NAME2] in gta_maths and EXCLUDE_MATHS:
+                continue
             a.append(dict(gta_id=row[ID]))
             a[len(a)-1]['name']=row[NAME1]+' '+row[NAME2]
             a[len(a)-1]['dept']=row[DEPT][:4]
@@ -94,6 +103,7 @@ fo.write('\\oddsidemargin -10mm\n')
 fo.write('\\evensidemargin -10mm\n')
 fo.write('\\topmargin -10mm\n')
 fo.write('\\usepackage{lscape}\n')
+fo.write('\\pagestyle{empty}\n')
 fo.write('\\begin{document}\n')
 fo.write('\\begin{landscape}\n')
 fo.write('\\begin{tabular}{')
@@ -132,4 +142,5 @@ fo.write('\\end{tabular}\n\\end{landscape}\n\\end{document}\n')
 fo.close()
 
 os.system('pdflatex gta_table')
+os.system('rm gta_table.aux;rm gta_table.log')
 print ('Finished - PDF should be in file gta_table.pdf')
