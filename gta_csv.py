@@ -8,9 +8,17 @@ import csv
 
 GTAPREFS = 'gta-prefs.csv'
 GTASKILLS = 'gta-skills.csv'
-ID,NAME1,NAME2,DEPT,GROUP = 2,3,4,5,6   # column numbers in the csv files
+#       You may need to change these depending on format of the csv files from the xlsx
+PID,PNAME1,PNAME2,PDEPT,PGROUP = 1,2,3,4,5   # column numbers in the pref file
+PDUTY,PINT = 0,7                             # cols describing duty/interest in prefs
+SID,SNAME1,SNAME2,SDEPT,SGROUP = 2,3,4,5,6   # column numbers in the skills file
+SSKILL,SLEVEL = 0,1                          # cols describing skill/levell in skills
+                                             # (These changed 9/8/22 in the xlsx)
 NUMPG = 30          # Number of entries per page of output PDF
 EXCLUDE_MATHS = True    # to remove anyone who's said they want maths tutorials
+#  Things below this shouldn't need changing for the program to work:
+#  adjust the arrays below 'columns' for desired pdf table format.
+
 try:
     gta_maths = np.loadtxt('gta_maths',delimiter=';',dtype='str')
 except:
@@ -29,39 +37,39 @@ a=[]
 with open(GTAPREFS,mode='r') as csv_file:
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
-        if row[ID]=='SPOT ID':
+        if row[PID]=='SPOT ID':
             continue
         # Add entry in main array if not present
-        if isgta(a,row[ID])!=-1:   # present already
+        if isgta(a,row[PID])!=-1:   # present already
             pass
         else:
-            if row[NAME1]+' '+row[NAME2] in gta_maths and EXCLUDE_MATHS:
+            if row[PNAME1]+' '+row[PNAME2] in gta_maths and EXCLUDE_MATHS:
                 continue
-            a.append(dict(gta_id=row[ID]))
-            a[len(a)-1]['name']=row[NAME1]+' '+row[NAME2]
-            a[len(a)-1]['dept']=row[DEPT][:4]
-            a[len(a)-1]['group']=row[GROUP].replace('&','\&').replace('#','').replace('Group','').replace('group','')[:30]
-        igta = isgta(a,row[ID])
-        a[igta][row[0]] = row[1]
+            a.append(dict(gta_id=row[PID]))
+            a[len(a)-1]['name']=row[PNAME1]+' '+row[PNAME2]
+            a[len(a)-1]['dept']=row[PDEPT][:4]
+            a[len(a)-1]['group']=row[PGROUP].replace('&','\&').replace('#','').replace('Group','').replace('group','')[:30]
+        igta = isgta(a,row[PID])
+        a[igta][row[PDUTY]] = row[PINT]
 
 # Next the skills
 
 with open(GTASKILLS,mode='r') as csv_file:
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
-        if row[ID]=='SPOT ID':
+        if row[SID]=='SPOT ID':
             continue
-        if isgta(a,row[ID])!=-1:   # present already
+        if isgta(a,row[SID])!=-1:   # present already
             pass
         else:
-            if row[NAME1]+' '+row[NAME2] in gta_maths and EXCLUDE_MATHS:
+            if row[SNAME1]+' '+row[SNAME2] in gta_maths and EXCLUDE_MATHS:
                 continue
-            a.append(dict(gta_id=row[ID]))
-            a[len(a)-1]['name']=row[NAME1]+' '+row[NAME2]
-            a[len(a)-1]['dept']=row[DEPT][:4]
-            a[len(a)-1]['group']=row[GROUP].replace('&','\&').replace('#','').replace('Group','').replace('group','')[:30]
-        igta = isgta(a,row[ID])
-        a[igta][row[0]]=row[1]
+            a.append(dict(gta_id=row[SID]))
+            a[len(a)-1]['name']=row[SNAME1]+' '+row[SNAME2]
+            a[len(a)-1]['dept']=row[SDEPT][:4]
+            a[len(a)-1]['group']=row[SGROUP].replace('&','\&').replace('#','').replace('Group','').replace('group','')[:30]
+        igta = isgta(a,row[SID])
+        a[igta][row[SSKILL]]=row[SLEVEL]
 
 # then write the table - adjust this array for whatever columns are interesting
 
