@@ -3,15 +3,16 @@
 #  Start with two csv files from the preferences and skills version of the
 #  spreadsheet (written with SAVE AS csv and all defaults)
 #
+# 2023-2024 version
 import numpy as np,os,sys
 import csv
 
 GTAPREFS = 'gta-prefs.csv'
 GTASKILLS = 'gta-skills.csv'
 #       You may need to change these depending on format of the csv files from the xlsx
-PID,PNAME1,PNAME2,PDEPT,PGROUP = 1,2,3,4,5   # column numbers in the pref file
-PDUTY,PINT = 0,7                             # cols describing duty/interest in prefs
-SID,SNAME1,SNAME2,SDEPT,SGROUP = 2,3,4,5,6   # column numbers in the skills file
+PID,PNAME1,PNAME2,PDEPT,PGROUP = 1,2,3,5,6   # column numbers in the pref file
+PDUTY,PINT = 0,8                             # cols describing duty/interest in prefs
+SID,SNAME1,SNAME2,SDEPT,SGROUP = 2,3,4,6,7   # column numbers in the skills file
 SSKILL,SLEVEL = 0,1                          # cols describing skill/levell in skills
                                              # (These changed 9/8/22 in the xlsx)
 NUMPG = 30          # Number of entries per page of output PDF
@@ -92,16 +93,16 @@ colhead = ['ID','Name','Dept','Group','\\rotatebox{90}{PHYS10180}',\
 
 # ... and the latex table type
 
-coltype = ['c','p{60mm}','c','p{70mm}','c','c','c','c','c','c','c','c','c','c']
+coltype = ['c','p{55mm}','c','p{70mm}','c','c','c','c','c','c','c','c','c','c']
 
 # two arrays, one with the verbose thing, and a corresponding array with the
 # compact entry for the tex table
 
 entry = ['Not taught. Could teach.','Not taught. Strongly wish to teach.',\
          'Have taught. Wish to repeat.','Have taught. Prefer alternative.',\
-         'Passing','Good','Phys']
+         'Passing','Good','Phys','Not declared']
 entry_alias = ['$\\circ$','$\\bullet$','$\\bullet$','$\\times$','$\\circ$',\
-               '$\\bullet$','{\\bf Phys}']
+               '$\\bullet$','{\\bf Phys}','?']
 
 fo = open('gta_table.tex','w')
 fo.write('\\documentclass[12pt]{article}\n')
