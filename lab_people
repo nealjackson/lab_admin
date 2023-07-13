@@ -1,4 +1,3 @@
-
 %S1PC1MON
 
 {\bf Year 1} w1-5
@@ -46,11 +45,6 @@ An Postgrad
 {\bf Year 1 DigEl} w7-12
 A. Staff
 An Postgrad
-T. O'Brien
-L. Fumagalli
-Emmanuel Akabuogu
-
-Alexander Fish
 
 
 %S1ELEFRI
@@ -58,11 +52,6 @@ Alexander Fish
 {\bf Year 2 AnF} w2-11
 A. Staff
 An Postgrad
-N. Jackson
-Josh Hay
-Edmund Ireland
-Jack Lawless
-Lewis Powell
 
 %S1Y1MON
 {\bf Year 1} w7-12
@@ -115,9 +104,7 @@ An Postgrad
 
 
 %S2Y1THU
-
-
-%S2Y2TUE
+S2Y2TUE
 
 
 %S2Y2FRI
@@ -196,19 +183,3 @@ An Postgrad
 
 
 %S2PC2TUE
-
-
-
-%S2PC2FRI
-
-
-%FOUNDATION
-A Postgrad
-
-#2 PG 
-
-%MATHS
-
-
-
-% WORKSHOPS
