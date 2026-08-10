@@ -49,6 +49,7 @@ ut=time.ctime()
 iscovid = 0      # iscovid = 0 if vaccine=True
 if len(sys.argv)>2:
     iscovid = int(sys.argv[2])
+
 f = open('lab_skeleton_CV%d.tex'%iscovid if iscovid else 'lab_skeleton.tex')
 fo=open('labdem.tex','w')
 for i in f:
@@ -74,9 +75,9 @@ for i in f:
                 dowrite=False
                 if (j.split())[0]==(i.split())[0]:
                     dowrite=True
-
         fp.close()
         fo.write('\\end{tabular}\n')
+
 f.close()
 
 import lab_distr
@@ -142,3 +143,88 @@ os.system ('sort lab_contracts.temp1 >lab_contracts.temp2')
 os.system ('uniq lab_contracts.temp2 >lab_contracts.temp3')
 consolidate ('lab_contracts.temp3','lab_contracts.csv')
 os.system ('rm lab_contracts.temp1; rm lab_contracts.temp2;rm lab_contracts.temp3')
+
+#  generate spreadsheet of GTAs
+#  columns: course-code serial-no firstname lastname dept group hours
+
+def getcode(label):
+    try:
+        sem = int(label[1])
+    except:
+        return 0,''
+    retlabel = ''
+    if label in ['S1Y1MON','S1Y1THU','S2Y1MON','S2Y1THU',\
+                 'S1ELEMON','S1ELETHU','S2ELEMON','S2ELETHU']:
+        retlabel = 'PHYS10180'
+    if label in ['S1Y3TUE','S1Y3THU','S2Y3TUE','S2Y3THU',\
+                 'S1NUCTUE','S1NUCTHU','S2NUCTUE','S2NUCTHU']:
+        retlabel = 'PHYS30180'
+    if label in ['S1Y2TUE','S1Y2FRI','S2Y2TUE','S2Y2FRI',\
+                 'S1ELETUE','S1ELEFRI','S1NUCTUE','S1NUCFRI',\
+                 'S2ELETUE','S2ELEFRI','S2NUCTUE','S2NUCFRI']:
+        retlabel = 'PHYS20180'
+    if label in ['S1PC1TUE','S1PC1FRI']:   # do S2NUCTUE manually after
+        retlabel = 'PHYS20161'
+    if label in ['S2PC1TUE','S2PC1FRI']:   # do S2PC1FRI manually after
+        retlabel = 'PHYS20762'
+    if label in ['S2PC1WED','S2PC1THU','S2PC1FRI']:
+        retlabel = 'PHYS30762'
+    if label in ['S2PC2TUE','S2PC2FRI']:
+        retlabel = 'PHYS20872'
+    return sem,retlabel
+    
+
+if not os.path.exists ('gta-prefs.csv'):
+    print ('*** OMITTING SPREADSHEET *** no file gta-prefs.csv')
+    exit(0)
+
+f = open ('lab_people')
+f1 = open('labdem_s1.csv','w')
+f2 = open('labdem_s2.csv','w')
+coursecode = ''
+for line in f:
+    #  line is comment, blank, description of unit no or staff member
+    if line[0]=='#' or len(line)<3 or '{' in line or '.' in line:
+        continue
+    if line[0]!='%' and coursecode=='':
+        continue
+    if line[0]=='%':
+        sem,coursecode = getcode(line[1:].rstrip())
+        continue
+    if ('(' in line):
+        line = line[:line.index('(')]
+    l = line.split()
+# concatenate all gta*prefs.csv files to look for ID, group etc
+    os.system('cat gta*prefs.csv >tmp.csv')
+    command = 'grep %s tmp.csv'%l[0]
+    for i in range(1,len(l)):
+        command += ' | grep %s' % (l[i])
+    command += '>tmp'
+    os.system(command)
+    fp = open('tmp')
+    try:
+        pline = fp.readline()
+        pline = pline.replace('"','')
+        pline = pline.replace('&#39;','')
+        person = pline.split(',')
+        serial,dept,group = person[1],person[4],person[5]
+    except:
+        serial,dept,group = 'None','None','None'
+    print (line.rstrip(), sem, coursecode,serial,dept,group)
+    fp.close()
+    hours = '72'
+    firstname = line.split()[0]
+    lastname = line[len(firstname):].rstrip().lstrip()
+    if sem==1:
+        f1.write('%s,%s,%s,%s,%s,%s,%s\n'%(coursecode,serial,firstname,lastname,dept,group,hours))
+    else:
+        f2.write('%s,%s,%s,%s,%s,%s,%s\n'%(coursecode,serial,firstname,lastname,dept,group,hours))
+            
+#  columns: course-code serial-no firstname lastname dept group hours
+
+
+f.close()
+f1.close()
+f2.close()
+os.system('sort -u labdem_s1.csv >tmp;mv tmp labdem_s1.csv')
+os.system('sort -u labdem_s2.csv >tmp;mv tmp labdem_s2.csv')
